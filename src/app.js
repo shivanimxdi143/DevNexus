@@ -2,29 +2,61 @@ const express = require("express");
 
 const app = express();
 
+
+//////// ERROR HANDLING ////////////
+// app.get("/getUserData", (req,res) => {
+//     throw new Error("dfgfdfbsfv");                not a good method to handle errors
+//     res.send("User Data Sent");
+// })
+
+// good method
+
+// app.get("/getUserData", (req,res) => {
+//     throw new Error("dfgfdfbsfv");                
+//     res.send("User Data Sent");
+// })
+
+// app.use("/", (err,req,res,next) => {
+//      if(err) {
+//         res.status(500).send("something went wrong");
+//      }
+// })
+
+// use try catch to handle errors
+
+app.get("/getUserData", (req,res) => {
+    try {
+        throw new Error("grgrggbhye");
+        res.send("User data sent");
+    }
+    catch (err) {
+        res.status(500).send("Some error contact support team");
+    }
+})
+
 ////// ORDERRRRRRRRRRRRR MATTERSSSSSSSSSSSSSSSSSSS
 /////// MIDDLEWARE AND ROUTE HANDLES
 
 
-const { adminAuth, userAuth } = require("./middlewares/auth");
+// const { adminAuth, userAuth } = require("./middlewares/auth");
 
 
-app.use("/admin", adminAuth);
+// app.use("/admin", adminAuth);
 
 
-app.post("/user/login", (req, res) => {
-    res.send("User logged in successfully!");
-});
+// app.post("/user/login", (req, res) => {
+//     res.send("User logged in successfully!");
+// });
 
 
-app.get("/user/data", userAuth, (req, res) => {
-    res.send("User Data Sent");
-});
+// app.get("/user/data", userAuth, (req, res) => {
+//     res.send("User Data Sent");
+// });
 
 
-app.get("/admin/getAllData", (req, res) => {
-    res.send("All Data Sent");
-});
+// app.get("/admin/getAllData", (req, res) => {
+//     res.send("All Data Sent");
+// });
 
 
 

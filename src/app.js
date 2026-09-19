@@ -5,9 +5,48 @@ const app = express();
 ////// ORDERRRRRRRRRRRRR MATTERSSSSSSSSSSSSSSSSSSS
 /////// MIDDLEWARE AND ROUTE HANDLES
 
+
+const { adminAuth, userAuth } = require("./middlewares/auth");
+
+
+app.use("/admin", adminAuth);
+
+
+app.post("/user/login", (req, res) => {
+    res.send("User logged in successfully!");
+});
+
+
+app.get("/user/data", userAuth, (req, res) => {
+    res.send("User Data Sent");
+});
+
+
+app.get("/admin/getAllData", (req, res) => {
+    res.send("All Data Sent");
+});
+
+
+
+// app.use("/", (req,res,next) => {
+//     console.log("Hello From Routes");
+//     next();
+// });
+// app.get("/user", (req,res,next) => {
+//     console.log("Hello MiddleWare");
+//     next();
+// },
+// (req,res,next) => {
+//     console.log("Bye");
+//     res.send("Route Handler");
+// }
+// )
+
+
 // app.use("/user", (req,res) => {
                                         // request will keep waiting
 // })
+
 
 // app.use(
 //     "/user",

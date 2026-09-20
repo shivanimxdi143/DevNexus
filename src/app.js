@@ -1,6 +1,6 @@
-const express = require("express");
+// const express = require("express");
 
-const app = express();
+// const app = express();
 
 
 //////// ERROR HANDLING ////////////
@@ -24,15 +24,15 @@ const app = express();
 
 // use try catch to handle errors
 
-app.get("/getUserData", (req,res) => {
-    try {
-        throw new Error("grgrggbhye");
-        res.send("User data sent");
-    }
-    catch (err) {
-        res.status(500).send("Some error contact support team");
-    }
-})
+// app.get("/getUserData", (req,res) => {
+//     try {
+//         throw new Error("grgrggbhye");
+//         res.send("User data sent");
+//     }
+//     catch (err) {
+//         res.status(500).send("Some error contact support team");
+//     }
+// })
 
 ////// ORDERRRRRRRRRRRRR MATTERSSSSSSSSSSSSSSSSSSS
 /////// MIDDLEWARE AND ROUTE HANDLES
@@ -165,4 +165,58 @@ app.get("/getUserData", (req,res) => {
 //     res.send("heyy from server!");
 // })
 
-app.listen(3000);
+// app.listen(3000);
+
+
+
+
+
+
+///// CONNECTING TO DATABASE
+
+// const express = require("express");
+// const connectDB = require("./config/database");
+// const app = express();
+
+// connectDB()
+//      .then(() => {
+//       console.log("DataBase connection established");
+//       app.listen(3000);
+// })
+//      .catch((err) => {
+//         console.log("Database can't be connected");
+//      })
+
+
+
+///// creating up a api
+
+const express = require("express");
+const connectDB = require("./config/database");
+const app = express();
+const User = require("./models/user");
+
+app.post("/signup" , async (req,res) => {
+     const user = new User({
+      firstName: "Shivani",
+      lastName: "Modi",
+      emailId: "shivani123@gmail.com",
+      password: "shivani1234@",
+     });
+    try {
+     await user.save();
+     res.send("User added successfully");
+    }
+    catch (err) {
+      res.status(400).send("Error saving the user:" + err.message);
+    }
+})
+connectDB()
+     .then(() => {
+      console.log("DataBase connection established");
+      app.listen(3000);
+})
+     .catch((err) => {
+        console.log("Database can't be connected");
+     })
+

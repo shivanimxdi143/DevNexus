@@ -224,6 +224,7 @@
 
 ///// diving directly into apis
 
+require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user");
@@ -243,22 +244,53 @@ app.post("/signup" , async (req,res) => {
     }
 })
 
-// get user by email
+// get user by email - finding specific
+// app.get("/user", async (req,res) => {
+//      const userEmail =req.body.emailId;
+
+//      try {
+//    const users =  await  User.find({emailId: userEmail});
+//    if(users.length===0) {
+//     res.status(404).send("User not found"); 
+//    }
+//      else{
+//           res.send(users);
+//     }
+//     }
+//    catch(err) {
+//       console.log(err.message);
+//      res.status(400).send("Something went wrong");
+//    }
+// })
+
+// if i am having 2 users of same emailId but i want one - function findOne
+
 app.get("/user", async (req,res) => {
      const userEmail =req.body.emailId;
 
      try {
-   const User =  await  User.find({emailId: userEmail});
-   res.send(user);
-     }
+     const users = await User.findOne({emailId: userEmail});
+     res.send(users);
+    
+    }
    catch(err) {
+      console.log(err.message);
      res.status(400).send("Something went wrong");
    }
 })
 
-// feed api - GET - get all the users from the database
-app.get("/feed", (req,res) => {
 
+
+
+// feed api - GET - get all the users from the database     finding all
+app.get("/feed", async (req,res) => {
+    try {
+      const users = await User.find({})
+      res.send(users);
+    }
+    catch(err) {
+      res.status(400).send("Something went wrong");
+    }
 })
 
 connectDB() 
@@ -267,5 +299,5 @@ connectDB()
      app.listen(3000);
   })
   .catch((err) => {
-     console.log("Database can't be connected");
+     console.log("Database can't be connected:" + err.message);
   })

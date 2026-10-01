@@ -324,6 +324,25 @@ app.patch("/user", async(req,res) => {
 
   const UserId = req.body.UserId;
   const data = req.body;
+
+  const ALLOWED_UPDATES = [
+    "UserId",
+     "photoUrl",
+    "about",
+    "gender",
+    "age",
+    "skills"
+  ];
+
+  const isUpdateAllowed = Object.keys(data).every((key) =>
+    ALLOWED_UPDATES.includes(key)
+);
+
+
+if (!isUpdateAllowed) {
+    return res.status(400).send("Update not allowed");
+}
+
   try {
     await User.findByIdAndUpdate(UserId, data);
     res.send("User updated successfully");
@@ -333,6 +352,8 @@ app.patch("/user", async(req,res) => {
     res.status(400).send("Something went wrong");
   }
 });
+
+
 
 connectDB() 
   .then(() => {

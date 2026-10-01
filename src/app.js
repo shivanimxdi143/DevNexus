@@ -225,6 +225,14 @@
 ///// diving directly into apis
 
 require("dotenv").config();
+
+const dns = require("dns");
+
+dns.setServers([
+    "8.8.8.8",
+    "1.1.1.1"
+]);
+
 const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user");
@@ -292,6 +300,39 @@ app.get("/feed", async (req,res) => {
       res.status(400).send("Something went wrong");
     }
 })
+
+
+app.delete("/user", async(req,res) => {
+
+   const UserId = req.body.UserId;
+
+   try {
+     const user = await User.findByIdAndDelete(UserId);
+     res.send("deleted successfully");
+
+   }
+
+  catch (err) {
+    res.status(400).send("something went wrong");
+  }
+
+
+})
+
+
+app.patch("/user", async(req,res) => {
+
+  const UserId = req.body.UserId;
+  const data = req.body;
+  try {
+    await User.findByIdAndUpdate(UserId, data);
+    res.send("User updated successfully");
+
+  }
+  catch(err) {
+    res.status(400).send("Something went wrong");
+  }
+});
 
 connectDB() 
   .then(() => {

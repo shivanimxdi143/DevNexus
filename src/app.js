@@ -239,8 +239,13 @@ const User = require("./models/user");
 const app = express();
 const  { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {userAuth} = require("./middleware/auth");
+
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup" , async (req,res) => {
      
@@ -283,6 +288,12 @@ app.post("/login", async (req, res) => {
         );
 
         if (isPasswordValid) {
+            // CREATE A JWT TOKEN
+
+            const token =  jwt.sign({ _id: user._id }, "DEV@NEXUS$0107", { expiresIn: "1d"});
+            console.log(token);
+           
+            res.cookie("token", token);
             res.send("Login Successful!");
         } else {
             throw new Error("Password not correct");
@@ -292,6 +303,85 @@ app.post("/login", async (req, res) => {
         res.status(400).send("ERROR : " + err.message);
     }
 });
+
+app.get("/profile", userAuth, async(req, res) => {
+try {
+  // const cookies = req.cookies;
+
+  // const { token } = cookies;
+  // if(!token) {
+  //   throw new Error("Invalid token");
+  // }
+  // // validate my token
+                                                                                  // this all is already in auth middleware
+  // const decodedMessage  = await jwt.verify(token, "DEV@NEXUS$0107");
+
+  
+  // const { _id } = decodedMessage;
+  // console.log("Logged in user is: " + _id);
+
+  // const user = await User.findById(_id); 
+  // if(!user) {
+  //   throw new Error("User doesn't exist");
+  // }
+  
+  // due to auth middleware just do as below
+
+  const user = req.user;
+  res.send(user);
+}
+ catch(err) {
+    res.status(400).send("ERROR : " + err.message);
+}
+})
+
+app.post("/sendConnectionRequest", userAuth, async(req, res) => {
+
+  const user = req.user;
+
+   console.log("Sending a connection request");
+
+res.send(user.firstName + " sent the connection request!!");
+});
+
+
+
+connectDB() 
+  .then(() => {
+     console.log("Connection established successfully");
+     app.listen(3000);
+  })
+  .catch((err) => {
+     console.log("Database can't be connected:" + err.message);
+  })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// random api's 
 
 // get user by email - finding specific
 // app.get("/user", async (req,res) => {
@@ -314,93 +404,93 @@ app.post("/login", async (req, res) => {
 
 // if i am having 2 users of same emailId but i want one - function findOne
 
-app.get("/user", async (req,res) => {
-     const userEmail =req.body.emailId;
+// app.get("/user", async (req,res) => {
+//      const userEmail =req.body.emailId;
 
-     try {
-     const users = await User.findOne({emailId: userEmail});
-     res.send(users);
+//      try {
+//      const users = await User.findOne({emailId: userEmail});
+//      res.send(users);
     
-    }
-   catch(err) {
-      console.log(err.message);
-     res.status(400).send("Something went wrong");
-   }
-})
+//     }
+//    catch(err) {
+//       console.log(err.message);
+//      res.status(400).send("Something went wrong");
+//    }
+// })
 
 
 
 
 // feed api - GET - get all the users from the database     finding all
-app.get("/feed", async (req,res) => {
-    try {
-      const users = await User.find({})
-      res.send(users);
-    }
-    catch(err) {
-      res.status(400).send("Something went wrong");
-    }
-})
+// app.get("/feed", async (req,res) => {
+//     try {
+//       const users = await User.find({})
+//       res.send(users);
+//     }
+//     catch(err) {
+//       res.status(400).send("Something went wrong");
+//     }
+// })
 
 
-app.delete("/user", async(req,res) => {
+// app.delete("/user", async(req,res) => {
 
-   const UserId = req.body.UserId;
+//    const UserId = req.body.UserId;
 
-   try {
-     const user = await User.findByIdAndDelete(UserId);
-     res.send("deleted successfully");
+//    try {
+//      const user = await User.findByIdAndDelete(UserId);
+//      res.send("deleted successfully");
 
-   }
+//    }
 
-  catch (err) {
-    res.status(400).send("something went wrong");
-  }
-
-
-})
+//   catch (err) {
+//     res.status(400).send("something went wrong");
+//   }
 
 
-app.patch("/user", async(req,res) => {
-
-  const UserId = req.body.UserId;
-  const data = req.body;
-
-  const ALLOWED_UPDATES = [
-    "UserId",
-     "photoUrl",
-    "about",
-    "gender",
-    "age",
-    "skills"
-  ];
-
-  const isUpdateAllowed = Object.keys(data).every((key) =>
-    ALLOWED_UPDATES.includes(key)
-);
+// })
 
 
-if (!isUpdateAllowed) {
-    return res.status(400).send("Update not allowed");
-}
+// app.patch("/user", async(req,res) => {
 
-  try {
-    await User.findByIdAndUpdate(UserId, data);
-    res.send("User updated successfully");
+//   const UserId = req.body.UserId;
+//   const data = req.body;
 
-  }
-  catch(err) {
-    res.status(400).send("Something went wrong");
-  }
-});
+//   const ALLOWED_UPDATES = [
+//     "UserId",
+//      "photoUrl",
+//     "about",
+//     "gender",
+//     "age",
+//     "skills"
+//   ];
+
+//   const isUpdateAllowed = Object.keys(data).every((key) =>
+//     ALLOWED_UPDATES.includes(key)
+// );
+
+
+// if (!isUpdateAllowed) {
+//     return res.status(400).send("Update not allowed");
+// }
+
+//   try {
+//     await User.findByIdAndUpdate(UserId, data);
+//     res.send("User updated successfully");
+
+//   }
+//   catch(err) {
+//     res.status(400).send("Something went wrong");
+//   }
+// });
 
 
 
-connectDB() 
-  .then(() => {
-     console.log("Connection established successfully");
-     app.listen(3000);
-  })
-  .catch((err) => {
-     console.log("Database can't be connected:" + err.message);
-  })
+// connectDB() 
+//   .then(() => {
+//      console.log("Connection established successfully");
+//      app.listen(3000);
+//   })
+//   .catch((err) => {
+//      console.log("Database can't be connected:" + err.message);
+//   })

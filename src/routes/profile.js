@@ -3,7 +3,7 @@ const profileRouter = express.Router();
 
 const {userAuth} = require("../middleware/auth");
 
-profileRouter.get("/profile", userAuth, async(req, res) => {
+profileRouter.get("/profile/view", userAuth, async(req, res) => {
 try {
   const user = req.user;
 
@@ -13,5 +13,6 @@ try {
     res.status(400).send("ERROR : " + err.message);
 }
 })
+
 
 module.exports = profileRouter;

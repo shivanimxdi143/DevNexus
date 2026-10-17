@@ -222,7 +222,7 @@
 
 
 
-///// diving directly into apis
+///// diving directly into apis //////////////////////////////////////////////////////////////////////////////////////////////
 
 require("dotenv").config();
 
@@ -247,65 +247,76 @@ const {userAuth} = require("./middleware/auth");
 app.use(express.json());
 app.use(cookieParser());
 
-app.post("/signup" , async (req,res) => {
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
+
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
+
+// app.post("/signup" , async (req,res) => {
      
   
-    try {
-     validateSignUpData(req);
+//     try {
+//      validateSignUpData(req);
 
-     const { firstName, lastName, emailId, password } = req.body;
+//      const { firstName, lastName, emailId, password } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     console.log(passwordHash);
 
-     const user = new User({
-       firstName, lastName, emailId, password: passwordHash,
-     });
+//      const user = new User({
+//        firstName, lastName, emailId, password: passwordHash,
+//      });
 
-     await user.save();
-     res.send("User added successfully");
-    }
-    catch (err) {
-      console.log(err);
-      res.status(400).send("Error saving the user:" + err.message);
-    }
-})
+//      await user.save();
+//      res.send("User added successfully");
+//     }
+//     catch (err) {
+//       console.log(err);
+//       res.status(400).send("Error saving the user:" + err.message);
+//     }
+// })
 
 
-app.post("/login", async (req, res) => {
-    try {
-        const { emailId, password } = req.body;
+// app.post("/login", async (req, res) => {
+//     try {
+//         const { emailId, password } = req.body;
 
-        const user = await User.findOne({ emailId: emailId });
+//         const user = await User.findOne({ emailId: emailId });
 
-        if (!user) {
-            throw new Error("invalid credentials");
-        }
+//         if (!user) {
+//             throw new Error("invalid credentials");
+//         }
 
-        const isPasswordValid = await bcrypt.compare(
-            password,
-            user.password
-        );
+//         const isPasswordValid = await bcrypt.compare(
+//             password,
+//             user.password
+//         );
 
-        if (isPasswordValid) {
-            // CREATE A JWT TOKEN
+//         if (isPasswordValid) {
+//             // CREATE A JWT TOKEN
 
-            const token =  jwt.sign({ _id: user._id }, "DEV@NEXUS$0107", { expiresIn: "1d"});
-            console.log(token);
+//             const token =  jwt.sign({ _id: user._id }, "DEV@NEXUS$0107", { expiresIn: "7d"});
+//             console.log(token);
            
-            res.cookie("token", token);
-            res.send("Login Successful!");
-        } else {
-            throw new Error("Password not correct");
-        }
+//             res.cookie("token", token, {
+//              expires: new Date(Date.now() + 8 * 3600000),
+//             });
 
-    } catch (err) {
-        res.status(400).send("ERROR : " + err.message);
-    }
-});
+//             res.send("Login Successful!");
+//         } else {
+//             throw new Error("Password not correct");
+//         }
 
-app.get("/profile", userAuth, async(req, res) => {
-try {
+//     } catch (err) {
+//         res.status(400).send("ERROR : " + err.message);
+//     }
+// });
+
+// app.get("/profile", userAuth, async(req, res) => {
+// try {
   // const cookies = req.cookies;
 
   // const { token } = cookies;
@@ -327,22 +338,22 @@ try {
   
   // due to auth middleware just do as below
 
-  const user = req.user;
-  res.send(user);
-}
- catch(err) {
-    res.status(400).send("ERROR : " + err.message);
-}
-})
+//   const user = req.user;
+//   res.send(user);
+// }
+//  catch(err) {
+//     res.status(400).send("ERROR : " + err.message);
+// }
+// })
 
-app.post("/sendConnectionRequest", userAuth, async(req, res) => {
+// app.post("/sendConnectionRequest", userAuth, async(req, res) => {
 
-  const user = req.user;
+//   const user = req.user;
 
-   console.log("Sending a connection request");
+//    console.log("Sending a connection request");
 
-res.send(user.firstName + " sent the connection request!!");
-});
+// res.send(user.firstName + " sent the connection request!!");
+// });
 
 
 

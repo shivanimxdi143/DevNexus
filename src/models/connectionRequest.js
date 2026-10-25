@@ -10,6 +10,7 @@ const connectionRequestSchema = new mongoose.Schema(
 
         toId_receiver: {
             type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
             required: true
         },
         status: {
@@ -37,7 +38,7 @@ connectionRequestSchema.pre("save", function () {
     
 })
 
-const ConnectionRequestModel = new mongoose.model(
+const ConnectionRequestModel = mongoose.model(
     "ConnectionRequest",
     connectionRequestSchema
 );

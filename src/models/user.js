@@ -44,15 +44,6 @@ const userSchema = new mongoose.Schema({
             }
         },
     },
-    photoUrl: {
-        type: String,
-        default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_xBGMyrKD7FQfsYWztueu_LYoTMCnKQbYOfcyqGUYLFjAvSpm3k0cYUQJ&s=10",
-        validate(value) {
-            if(!validator.isURL(value)) {
-                throw new error("Invalid url");
-            }
-        },
-    },
     about: {
         type: String,
         default: "This is a default about of a user",

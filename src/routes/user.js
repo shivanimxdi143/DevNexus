@@ -36,7 +36,10 @@ userRouter.get("/user/connections", userAuth, async(req,res) => {
        }).populate("fromId_sender", ["firstName", "lastName"]).populate("toId_receiver", ["firstName", "lastName"]);
 
        const data = connectionRequest.map((connectionRequest) => {
-    if(connectionRequest.fromId_sender._id.toString() === loggedInUser) {
+    if  (
+  connectionRequest.fromId_sender._id.toString() ===
+  loggedInUser._id.toString()
+) {
         return connectionRequest.toId_receiver;
     }
        return connectionRequest.fromId_sender;
@@ -56,7 +59,7 @@ userRouter.get("/feed", userAuth, async(req,res) => {
        const loggedInUser = req.user;
        
        const page = parseInt(req.query.page) || 1;
-       const limit = parseInt(req.query.limit) || 10;
+       let limit = parseInt(req.query.limit) || 10;
        limit = limit>50 ? 50 : limit;
        const skip = (page-1) * limit;
        // find all connection request either sent or received
@@ -86,7 +89,7 @@ userRouter.get("/feed", userAuth, async(req,res) => {
     catch(err) {
         res.status(400).json({message: err.message});
     }
-})
+});
 module.exports = userRouter;
 
 

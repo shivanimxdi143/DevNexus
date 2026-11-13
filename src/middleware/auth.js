@@ -15,7 +15,7 @@ const userAuth = async (req,res,next) => {
     throw new Error("Tokenn nottt valid!!!!!!!!!");
    }
 
-   const decodedDate = jwt.verify(token, "DEV@NEXUS$0107");
+   const decodedDate = jwt.verify(token, "DevNexus@NewSecret2026#Secure");
 
    const { _id } = decodedDate;
 

@@ -47,12 +47,19 @@ authRouter.post("/login", async (req, res) => {
         if (isPasswordValid) {
             // CREATE A JWT TOKEN
 
-            const token =  jwt.sign({ _id: user._id }, "DEV@NEXUS$0107", { expiresIn: "7d"});
-            console.log(token);
+           const token = jwt.sign(
+  { _id: user._id },
+  "DevNexus@NewSecret2026#Secure",
+  { expiresIn: "7d" }
+);
+          
            
-            res.cookie("token", token, {
-             expires: new Date(Date.now() + 8 * 3600000),
-            });
+           res.cookie("token", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    expires: new Date(Date.now() + 8 * 3600000),
+});
 
             res.send("Login Successful!");
         } else {
@@ -64,12 +71,18 @@ authRouter.post("/login", async (req, res) => {
     }
 });
 
-authRouter.post("/logout", async(req, res) => {
-    res.cookie("token", null, {
-        expires: new Date(Date.now()),
+
+authRouter.post("/logout", (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
     });
-    res.send("Logout successfull!!!");
+
+    res.send("Logout successful!");
 });
+
 
 
 

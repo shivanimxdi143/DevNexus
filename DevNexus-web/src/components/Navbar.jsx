@@ -49,9 +49,25 @@ function Navbar() {
           </div>
 
           <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+
             <li>
-              <button onClick={handleLogout}>Logout</button>
+              <button onClick={() => navigate("/profile")}>
+                Profile
+              </button>
             </li>
+
+            <li>
+              <button onClick={() => navigate("/settings")}>
+                Settings
+              </button>
+            </li>
+
+            <li>
+              <button onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+
           </ul>
         </div>
       )}
@@ -60,3 +76,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

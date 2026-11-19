@@ -1,490 +1,94 @@
-// const express = require("express");
-
-// const app = express();
-
-
-//////// ERROR HANDLING ////////////
-// app.get("/getUserData", (req,res) => {
-//     throw new Error("dfgfdfbsfv");                not a good method to handle errors
-//     res.send("User Data Sent");
-// })
-
-// good method
-
-// app.get("/getUserData", (req,res) => {
-//     throw new Error("dfgfdfbsfv");                
-//     res.send("User Data Sent");
-// })
-
-// app.use("/", (err,req,res,next) => {
-//      if(err) {
-//         res.status(500).send("something went wrong");
-//      }
-// })
-
-// use try catch to handle errors
-
-// app.get("/getUserData", (req,res) => {
-//     try {
-//         throw new Error("grgrggbhye");
-//         res.send("User data sent");
-//     }
-//     catch (err) {
-//         res.status(500).send("Some error contact support team");
-//     }
-// })
-
-////// ORDERRRRRRRRRRRRR MATTERSSSSSSSSSSSSSSSSSSS
-/////// MIDDLEWARE AND ROUTE HANDLES
-
-
-// const { adminAuth, userAuth } = require("./middlewares/auth");
-
-
-// app.use("/admin", adminAuth);
-
-
-// app.post("/user/login", (req, res) => {
-//     res.send("User logged in successfully!");
-// });
-
-
-// app.get("/user/data", userAuth, (req, res) => {
-//     res.send("User Data Sent");
-// });
-
-
-// app.get("/admin/getAllData", (req, res) => {
-//     res.send("All Data Sent");
-// });
-
-
-
-// app.use("/", (req,res,next) => {
-//     console.log("Hello From Routes");
-//     next();
-// });
-// app.get("/user", (req,res,next) => {
-//     console.log("Hello MiddleWare");
-//     next();
-// },
-// (req,res,next) => {
-//     console.log("Bye");
-//     res.send("Route Handler");
-// }
-// )
-
-
-// app.use("/user", (req,res) => {
-                                        // request will keep waiting
-// })
-
-
-// app.use(
-//     "/user",
-//  (req,res) => {
-//     res.send("Hello from Router"); 
-//  },                                           // order matters due to which first route will run or   Because Express executes middleware in order, and the first middleware ended the request by sending a response.
-// (req,res) => {
-//     res.send("Bye from Router");
-// })
-
-
-// app.use(
-//     "/user",
-//     (req,res,next) => {
-//         next();
-//     },                                  // we didn't send any respond in first route but due to next 2nd route will run
-//     (req,res) => {
-//         res.send("Byeee");
-//     }
-// )
-
-
-// app.use(
-//     "/user",
-//     (req,res,next) => {
-//         res.send("Hello");
-//         next();
-//     },                                  
-//     (req,res) => {
-//         res.send("Byeee");
-//     }
-// )
-
-
-// app.use(
-//     "/user",
-//     (req,res,next) => {
-//       next();
-//       res.send("Bandar ki tuti chonch");
-//     },                                       // next came first and it means "Leave this middleware and go to the next middleware."
-//     (req,res) => {
-//      res.send("Tuti chonch ka bandar");
-//     }
-// )
-
-////////////////////////// Playing with routes////////////////////////////
-// app.get("/users", (req,res) => {
-//     console.log(req.query);
-//     res.send("Done");
-// })
-
-// app.get("/users/:id", (req,res) => {
-//     console.log(req.params);
-//     res.send("Done");
-// })
-
-// app.use("/hi", (req,res) => {
-//     res.send("Helloo from the dashboard!");
-// })
-
-// app.use("/user", (req,res) => {
-//     res.send("HaHAAAAAAAAAAAA");
-// })
-
-// this will handle only GET calls to /user
-// app.get("/user",(req,res) => {
-//       res.send({firstName:"Shivani", lastName:"Modi"});
-// });
-
-// app.post("/user", (req, res) => {
-//     res.send("Data saved to the database");
-// })
-
-// app.delete("/user", (req, res) => {
-//     res.send("Deleted successfully");
-// })
-
-// this will handle all the http methods
-// app.use("/hello", (req,res) => {
-//     res.send("finally server created!");
-// })
-
-// app.use("/test", (req,res) => {
-//     res.send("heyy from server!");
-// })
-
-// app.listen(3000);
-
-
-
-
-
-
-///// CONNECTING TO DATABASE
-
-// const express = require("express");
-// const connectDB = require("./config/database");
-// const app = express();
-
-// connectDB()
-//      .then(() => {
-//       console.log("DataBase connection established");
-//       app.listen(3000);
-// })
-//      .catch((err) => {
-//         console.log("Database can't be connected");
-//      })
-
-
-
-///// creating up a api
-
-// const express = require("express");
-// const connectDB = require("./config/database");
-// const app = express();
-// const User = require("./models/user");
-
-// app.post("/signup" , async (req,res) => {
-//      const user = new User({
-//       firstName: "Shivani",
-//       lastName: "Modi",
-//       emailId: "shivani123@gmail.com",
-//       password: "shivani1234@",
-//      });
-//     try {
-//      await user.save();
-//      res.send("User added successfully");
-//     }
-//     catch (err) {
-//       res.status(400).send("Error saving the user:" + err.message);
-//     }
-// })
-// connectDB()
-//      .then(() => {
-//       console.log("DataBase connection established");
-//       app.listen(3000);
-// })
-//      .catch((err) => {
-//         console.log("Database can't be connected");
-//      })
-
-
-
-///// diving directly into apis //////////////////////////////////////////////////////////////////////////////////////////////
 
 require("dotenv").config();
 
 const dns = require("dns");
 
 dns.setServers([
-    "8.8.8.8",
-    "1.1.1.1"
+  "8.8.8.8",
+  "1.1.1.1"
 ]);
 
 const express = require("express");
-const connectDB = require("./config/database");
-const User = require("./models/user");
-const app = express();
-const  { validateSignUpData } = require("./utils/validation");
-const bcrypt = require("bcrypt");
-const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const {userAuth} = require("./middleware/auth");
+const http = require("http");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const { Server } = require("socket.io");
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors({
+const connectDB = require("./config/database");
+const socketAuth = require("./sockets/socketAuth");
+
+const {
+  addUser,
+  removeUser
+} = require("./sockets/onlineUsers");
+
+const app = express();
+const server = http.createServer(app);
+
+// Socket.IO initialization
+const io = new Server(server, {
+  cors: {
     origin: "http://localhost:5173",
     credentials: true
+  }
+});
+
+// Authenticate every incoming socket connection
+io.use(socketAuth);
+
+// Handle authenticated connections
+io.on("connection", (socket) => {
+
+  const userId = socket.userId;
+
+  // Register this user's socket connection
+  addUser(userId, socket.id);
+
+  console.log("User connected:", socket.id);
+  console.log("Authenticated user:", userId);
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+
+    // Remove this socket connection
+    removeUser(userId, socket.id);
+
+    console.log("User disconnected:", socket.id);
+  });
+
+});
+
+// Express middleware
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
 }));
 
+// Routes
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const paymentRouter = require("./routes/payment");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
-app.use("/",userRouter);
+app.use("/", userRouter);
+app.use("/", paymentRouter);
 
-// app.post("/signup" , async (req,res) => {
-     
-  
-//     try {
-//      validateSignUpData(req);
-
-//      const { firstName, lastName, emailId, password } = req.body;
-
-//     const passwordHash = await bcrypt.hash(password, 10);
-//     console.log(passwordHash);
-
-//      const user = new User({
-//        firstName, lastName, emailId, password: passwordHash,
-//      });
-
-//      await user.save();
-//      res.send("User added successfully");
-//     }
-//     catch (err) {
-//       console.log(err);
-//       res.status(400).send("Error saving the user:" + err.message);
-//     }
-// })
-
-
-// app.post("/login", async (req, res) => {
-//     try {
-//         const { emailId, password } = req.body;
-
-//         const user = await User.findOne({ emailId: emailId });
-
-//         if (!user) {
-//             throw new Error("invalid credentials");
-//         }
-
-//         const isPasswordValid = await bcrypt.compare(
-//             password,
-//             user.password
-//         );
-
-//         if (isPasswordValid) {
-//             // CREATE A JWT TOKEN
-
-//             const token =  jwt.sign({ _id: user._id }, "DEV@NEXUS$0107", { expiresIn: "7d"});
-//             console.log(token);
-           
-//             res.cookie("token", token, {
-//              expires: new Date(Date.now() + 8 * 3600000),
-//             });
-
-//             res.send("Login Successful!");
-//         } else {
-//             throw new Error("Password not correct");
-//         }
-
-//     } catch (err) {
-//         res.status(400).send("ERROR : " + err.message);
-//     }
-// });
-
-// app.get("/profile", userAuth, async(req, res) => {
-// try {
-  // const cookies = req.cookies;
-
-  // const { token } = cookies;
-  // if(!token) {
-  //   throw new Error("Invalid token");
-  // }
-  // // validate my token
-                                                                                  // this all is already in auth middleware
-  // const decodedMessage  = await jwt.verify(token, "DEV@NEXUS$0107");
-
-  
-  // const { _id } = decodedMessage;
-  // console.log("Logged in user is: " + _id);
-
-  // const user = await User.findById(_id); 
-  // if(!user) {
-  //   throw new Error("User doesn't exist");
-  // }
-  
-  // due to auth middleware just do as below
-
-//   const user = req.user;
-//   res.send(user);
-// }
-//  catch(err) {
-//     res.status(400).send("ERROR : " + err.message);
-// }
-// })
-
-// app.post("/sendConnectionRequest", userAuth, async(req, res) => {
-
-//   const user = req.user;
-
-//    console.log("Sending a connection request");
-
-// res.send(user.firstName + " sent the connection request!!");
-// });
-
-
-
+// Connect database and start server
 connectDB()
   .then(() => {
     console.log("Connection established successfully");
 
-    app.listen(3000, () => {
+    server.listen(3000, () => {
       console.log("Server is running on port 3000");
     });
   })
   .catch((err) => {
     console.log("Database can't be connected:", err.message);
   });
-
-// random api's 
-
-// get user by email - finding specific
-// app.get("/user", async (req,res) => {
-//      const userEmail =req.body.emailId;
-
-//      try {
-//    const users =  await  User.find({emailId: userEmail});
-//    if(users.length===0) {
-//     res.status(404).send("User not found"); 
-//    }
-//      else{
-//           res.send(users);
-//     }
-//     }
-//    catch(err) {
-//       console.log(err.message);
-//      res.status(400).send("Something went wrong");
-//    }
-// })
-
-// if i am having 2 users of same emailId but i want one - function findOne
-
-// app.get("/user", async (req,res) => {
-//      const userEmail =req.body.emailId;
-
-//      try {
-//      const users = await User.findOne({emailId: userEmail});
-//      res.send(users);
-    
-//     }
-//    catch(err) {
-//       console.log(err.message);
-//      res.status(400).send("Something went wrong");
-//    }
-// })
-
-
-
-
-// feed api - GET - get all the users from the database     finding all
-// app.get("/feed", async (req,res) => {
-//     try {
-//       const users = await User.find({})
-//       res.send(users);
-//     }
-//     catch(err) {
-//       res.status(400).send("Something went wrong");
-//     }
-// })
-
-
-// app.delete("/user", async(req,res) => {
-
-//    const UserId = req.body.UserId;
-
-//    try {
-//      const user = await User.findByIdAndDelete(UserId);
-//      res.send("deleted successfully");
-
-//    }
-
-//   catch (err) {
-//     res.status(400).send("something went wrong");
-//   }
-
-
-// })
-
-
-// app.patch("/user", async(req,res) => {
-
-//   const UserId = req.body.UserId;
-//   const data = req.body;
-
-//   const ALLOWED_UPDATES = [
-//     "UserId",
-//      "photoUrl",
-//     "about",
-//     "gender",
-//     "age",
-//     "skills"
-//   ];
-
-//   const isUpdateAllowed = Object.keys(data).every((key) =>
-//     ALLOWED_UPDATES.includes(key)
-// );
-
-
-// if (!isUpdateAllowed) {
-//     return res.status(400).send("Update not allowed");
-// }
-
-//   try {
-//     await User.findByIdAndUpdate(UserId, data);
-//     res.send("User updated successfully");
-
-//   }
-//   catch(err) {
-//     res.status(400).send("Something went wrong");
-//   }
-// });
-
-
-
-// connectDB() 
-//   .then(() => {
-//      console.log("Connection established successfully");
-//      app.listen(3000);
-//   })
-//   .catch((err) => {
-//      console.log("Database can't be connected:" + err.message);
-//   })

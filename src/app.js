@@ -40,10 +40,10 @@ io.use(socketAuth);
 io.on("connection", (socket) => {
 
   const userId = socket.userId;
-
+ 
   // Register this user's socket connection
   addUser(userId, socket.id);
-
+  chatHandler(io, socket);
   console.log("User connected:", socket.id);
   console.log("Authenticated user:", userId);
 
@@ -73,12 +73,17 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 const paymentRouter = require("./routes/payment");
+ const messageRequestRouter = require("./routes/messageRequest");
+const chatHandler = require("./sockets/chat");
+ const conversationRouter = require("./routes/conversation");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", paymentRouter);
+app.use("/", messageRequestRouter);
+app.use("/", conversationRouter);
 
 // Connect database and start server
 connectDB()

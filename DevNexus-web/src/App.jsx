@@ -11,6 +11,12 @@ import HomeRedirect from "./components/HomeRedirect";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
+import Requests from "./pages/Requests";
+import Connections from "./pages/Connections";
+import Premium from "./pages/Premium.jsx";
+import Chat from "./pages/Chat";
+import MessageRequests from "./pages/MessageRequests";
 
 const appRouter = createBrowserRouter([
   {
@@ -19,7 +25,9 @@ const appRouter = createBrowserRouter([
       <CheckAuth>
         <div className="min-h-screen flex flex-col">
           <Navbar />
-          <Body />
+          <main className="flex-1 w-full min-w-0 flex flex-col">
+            <Body />
+          </main>
         </div>
       </CheckAuth>
     ),
@@ -52,6 +60,54 @@ const appRouter = createBrowserRouter([
           </GuestRoute>
         ),
       },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/requests",
+        element: (
+          <ProtectedRoute>
+            <Requests />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/connections",
+        element: (
+          <ProtectedRoute>
+            <Connections />
+          </ProtectedRoute>
+        ),
+      },
+      {
+  path: "/premium",
+  element: (
+    <ProtectedRoute>
+      <Premium />
+    </ProtectedRoute>
+  ),
+},
+{
+  path: "/chat",
+  element: (
+    <ProtectedRoute>
+      <Chat />
+    </ProtectedRoute>
+  ),
+},
+{
+    path: "/message-requests",
+    element: (
+        <ProtectedRoute>
+            <MessageRequests />
+        </ProtectedRoute>
+    ),
+},
     ],
   },
 ]);

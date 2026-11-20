@@ -1,79 +1,142 @@
 
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { removeUser } from "../redux/userSlice";
 
 function Navbar() {
-  const user = useSelector((store) => store.user);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const user = useSelector((store) => store.user);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        "http://localhost:3000/logout",
-        {},
-        { withCredentials: true }
-      );
+    const [isPremium, setIsPremium] = useState(false);
 
-      dispatch(removeUser());
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
+    // Fetch Premium membership status
+    useEffect(() => {
+        if (!user) return;
 
-  return (
-    <div className="navbar bg-base-200 border-b border-base-300 shadow-sm px-4">
-      <div className="flex-1">
-        <a className="btn btn-ghost text-xl">DevNexus</a>
-      </div>
+        const fetchPremiumStatus = async () => {
+            try {
+                const res = await axios.get(
+                    "http://localhost:3000/payment/status",
+                    { withCredentials: true }
+                );
 
-      {user && (
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            <div className="w-10 rounded-full">
-              <img
-                alt="User Profile"
-                src={
-                  user.photoUrl ||
-                  "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                }
-              />
+                setIsPremium(res.data.isActive);
+            } catch (err) {
+                console.error("Failed to fetch Premium status:", err);
+                setIsPremium(false);
+            }
+        };
+
+        fetchPremiumStatus();
+    }, [user]);
+
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                "http://localhost:3000/logout",
+                {},
+                { withCredentials: true }
+            );
+
+            dispatch(removeUser());
+            navigate("/login");
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+
+    if (!user) return null;
+
+    return (
+        <div className="navbar bg-[#17191f] text-white px-6 shadow-md">
+
+            {/* Logo */}
+            <div className="flex-1">
+                <NavLink
+                    to="/feed"
+                    className="text-2xl font-bold flex items-center gap-2"
+                >
+                    🔒 DevNexus
+                </NavLink>
             </div>
-          </div>
 
-          <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            {/* Username and Profile Dropdown */}
+            <div className="flex items-center gap-3">
 
-            <li>
-              <button onClick={() => navigate("/profile")}>
-                Profile
-              </button>
+                <span className="text-white font-semibold text-base">
+                    {user.firstName} {user.lastName}
+                </span>
+
+                <div className="dropdown dropdown-end">
+
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        className="btn btn-ghost btn-circle avatar"
+                    >
+                        <div className="w-10 rounded-full">
+                            <img
+                                src={
+                                    user.photoUrl ||
+                                    `https://api.dicebear.com/9.x/initials/svg?seed=${user.firstName}`
+                                }
+                                alt="Profile"
+                            />
+                        </div>
+                    </div>
+
+                    <ul
+                        tabIndex={0}
+                        className="dropdown-content menu bg-[#252b34] text-white rounded-box z-50 w-56 p-3 shadow-lg mt-3"
+                    >
+                        <li>
+                            <NavLink to="/feed">Dashboard</NavLink>
+                        </li>
+
+                        <li>
+                            <NavLink to="/profile">My Profile</NavLink>
+                        </li>
+
+                        <li>
+                            <NavLink to="/requests">Requests</NavLink>
+                        </li>
+                        <li>
+               <NavLink to="/message-requests">
+        Message Requests
+            </NavLink>
             </li>
 
-            <li>
-              <button onClick={() => navigate("/settings")}>
-                Settings
-              </button>
-            </li>
+                        <li>
+                            <NavLink to="/connections">Connections</NavLink>
+                        </li>
 
-            <li>
-              <button onClick={handleLogout}>
-                Logout
-              </button>
-            </li>
+                        <li>
+                         <NavLink to="/chat">💬 Chat</NavLink>
+                        </li>
 
-          </ul>
+                        <li>
+                            <NavLink to="/premium">
+                                {isPremium ? "👑 Premium Active" : "⭐ Get Premium"}
+                            </NavLink>
+                        </li>
+
+                        <li>
+                            <button
+                                onClick={handleLogout}
+                                className="text-red-400"
+                            >
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 }
 
 export default Navbar;
-

@@ -21,6 +21,9 @@ const Chat = () => {
 
     const socketRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const selectedConversationIdRef = useRef(null);
+
+selectedConversationIdRef.current = selectedConversation?._id;
 
     const currentUserId = user?._id || user?.id;
 
@@ -47,75 +50,91 @@ const Chat = () => {
     }, []);
 
     // Connect Socket.IO
-    useEffect(() => {
-        const socket = io(API, {
-            withCredentials: true,
-        });
+  
+useEffect(() => {
+    const socket = io(API, {
+        withCredentials: true,
+    });
 
-        socketRef.current = socket;
+    socketRef.current = socket;
 
-        socket.on("connect_error", (err) => {
-            console.error("Socket connection failed:", err.message);
-        });
+    socket.on("connect_error", (err) => {
+        console.error("Socket connection failed:", err.message);
+        setError("Chat connection failed. Please try again.");
+    });
 
-        socket.on("newMessage", (message) => {
-            const conversationId =
-                message.conversationId?._id ||
-                message.conversationId?.toString();
+    socket.on("newMessage", (message) => {
+        const conversationId =
+            message.conversationId?._id ||
+            message.conversationId?.toString();
 
-            setMessages((prev) => {
-                if (
-                    selectedConversation?._id !== conversationId ||
-                    prev.some((item) => item._id === message._id)
-                ) {
-                    return prev;
-                }
-
-                return [...prev, message];
-            });
-
-            setConversations((prev) =>
-                prev.map((conversation) =>
-                    conversation._id === conversationId
-                        ? { ...conversation, lastMessage: message }
-                        : conversation
-                )
+        // Update messages only for the currently selected conversation
+        if (selectedConversationIdRef.current === conversationId) {
+            setMessages((prev) =>
+                prev.some((item) => item._id === message._id)
+                    ? prev
+                    : [...prev, message]
             );
-        });
+        }
 
-        return () => {
-            socket.disconnect();
-            socketRef.current = null;
-        };
-    }, [selectedConversation?._id]);
+        // Update latest message in conversation list
+        setConversations((prev) =>
+            prev.map((conversation) =>
+                conversation._id === conversationId
+                    ? { ...conversation, lastMessage: message }
+                    : conversation
+            )
+        );
+    });
 
-    // Fetch messages when a conversation is selected
-    useEffect(() => {
-        if (!selectedConversation) return;
+    return () => {
+        socket.disconnect();
+        socketRef.current = null;
+    };
+}, []);
 
-        const fetchMessages = async () => {
-            setMessagesLoading(true);
-            setMessages([]);
 
-            try {
-                const res = await axios.get(
-                    `${API}/conversations/${selectedConversation._id}/messages`,
-                    { withCredentials: true }
-                );
+   
+  // Fetch messages when a conversation is selected
+useEffect(() => {
+    if (!selectedConversation) return;
 
+    let cancelled = false;
+
+    const fetchMessages = async () => {
+        setMessagesLoading(true);
+        setMessages([]);
+        setError("");
+
+        try {
+            const res = await axios.get(
+                `${API}/conversations/${selectedConversation._id}/messages`,
+                { withCredentials: true }
+            );
+
+            if (!cancelled) {
                 setMessages(res.data.data || []);
-            } catch (err) {
+            }
+        } catch (err) {
+            if (!cancelled) {
                 setError(
                     err.response?.data?.message ||
                     "Failed to load messages."
                 );
-            } finally {
+            }
+        } finally {
+            if (!cancelled) {
                 setMessagesLoading(false);
             }
-        };
+        }
+    };
 
-        fetchMessages();
-    }, [selectedConversation]);
+    fetchMessages();
+
+    return () => {
+        cancelled = true;
+    };
+}, [selectedConversation?._id]);
 
     // Auto-scroll to latest message
     useEffect(() => {
@@ -242,9 +261,9 @@ const Chat = () => {
                                                 setSelectedConversation(conversation);
                                             }}
                                             className={`w-full flex items-center gap-3 p-4 text-left hover:bg-base-200 transition ${
-                                                selectedConversation?._id === conversation._id
-                                                    ? "bg-base-200"
-                                                    : ""
+                                            selectedConversation?._id === conversation._id
+                                             ? "bg-base-200"
+                                             : ""
                                             }`}
                                         >
                                             <div className="avatar">

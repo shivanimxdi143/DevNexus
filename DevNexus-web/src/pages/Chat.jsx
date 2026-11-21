@@ -23,7 +23,7 @@ const Chat = () => {
     const messagesEndRef = useRef(null);
     const selectedConversationIdRef = useRef(null);
 
-selectedConversationIdRef.current = selectedConversation?._id;
+    selectedConversationIdRef.current = selectedConversation?._id;
 
     const currentUserId = user?._id || user?.id;
 
@@ -50,91 +50,88 @@ selectedConversationIdRef.current = selectedConversation?._id;
     }, []);
 
     // Connect Socket.IO
-  
-useEffect(() => {
-    const socket = io(API, {
-        withCredentials: true,
-    });
+    useEffect(() => {
+        const socket = io(API, {
+            withCredentials: true,
+        });
 
-    socketRef.current = socket;
+        socketRef.current = socket;
 
-    socket.on("connect_error", (err) => {
-        console.error("Socket connection failed:", err.message);
-        setError("Chat connection failed. Please try again.");
-    });
+        socket.on("connect_error", (err) => {
+            console.error("Socket connection failed:", err.message);
+            setError("Chat connection failed. Please try again.");
+        });
 
-    socket.on("newMessage", (message) => {
-        const conversationId =
-            message.conversationId?._id ||
-            message.conversationId?.toString();
+        socket.on("newMessage", (message) => {
+            const conversationId =
+                message.conversationId?._id ||
+                message.conversationId?.toString();
 
-        // Update messages only for the currently selected conversation
-        if (selectedConversationIdRef.current === conversationId) {
-            setMessages((prev) =>
-                prev.some((item) => item._id === message._id)
-                    ? prev
-                    : [...prev, message]
-            );
-        }
-
-        // Update latest message in conversation list
-        setConversations((prev) =>
-            prev.map((conversation) =>
-                conversation._id === conversationId
-                    ? { ...conversation, lastMessage: message }
-                    : conversation
-            )
-        );
-    });
-
-    return () => {
-        socket.disconnect();
-        socketRef.current = null;
-    };
-}, []);
-
-
-   
-  // Fetch messages when a conversation is selected
-useEffect(() => {
-    if (!selectedConversation) return;
-
-    let cancelled = false;
-
-    const fetchMessages = async () => {
-        setMessagesLoading(true);
-        setMessages([]);
-        setError("");
-
-        try {
-            const res = await axios.get(
-                `${API}/conversations/${selectedConversation._id}/messages`,
-                { withCredentials: true }
-            );
-
-            if (!cancelled) {
-                setMessages(res.data.data || []);
-            }
-        } catch (err) {
-            if (!cancelled) {
-                setError(
-                    err.response?.data?.message ||
-                    "Failed to load messages."
+            // Update messages only for the currently selected conversation
+            if (selectedConversationIdRef.current === conversationId) {
+                setMessages((prev) =>
+                    prev.some((item) => item._id === message._id)
+                        ? prev
+                        : [...prev, message]
                 );
             }
-        } finally {
-            if (!cancelled) {
-                setMessagesLoading(false);
+
+            // Update latest message in conversation list
+            setConversations((prev) =>
+                prev.map((conversation) =>
+                    conversation._id === conversationId
+                        ? { ...conversation, lastMessage: message }
+                        : conversation
+                )
+            );
+        });
+
+        return () => {
+            socket.disconnect();
+            socketRef.current = null;
+        };
+    }, []);
+
+    // Fetch messages when a conversation is selected
+    useEffect(() => {
+        if (!selectedConversation) return;
+
+        let cancelled = false;
+
+        const fetchMessages = async () => {
+            setMessagesLoading(true);
+            setMessages([]);
+            setError("");
+
+            try {
+                const res = await axios.get(
+                    `${API}/conversations/${selectedConversation._id}/messages`,
+                    { withCredentials: true }
+                );
+
+                if (!cancelled) {
+                    setMessages(res.data.data || []);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setError(
+                        err.response?.data?.message ||
+                        "Failed to load messages."
+                    );
+                }
+            } finally {
+                if (!cancelled) {
+                    setMessagesLoading(false);
+                }
             }
-        }
-    };
+        };
 
-    fetchMessages();
+        fetchMessages();
 
-    return () => {
-        cancelled = true;
-    };
-}, [selectedConversation?._id]);
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedConversation?._id]);
 
     // Auto-scroll to latest message
     useEffect(() => {
@@ -145,15 +142,13 @@ useEffect(() => {
 
     // Find the other participant
     const getOtherUser = (conversation) => {
-        return conversation.participants?.find(
-            (participant) => {
-                const participantId =
-                    participant?._id || participant;
+        return conversation.participants?.find((participant) => {
+            const participantId = participant?._id || participant;
 
-                return participantId?.toString() !==
-                    currentUserId?.toString();
-            }
-        );
+            return (
+                participantId?.toString() !== currentUserId?.toString()
+            );
+        });
     };
 
     // Send message
@@ -169,13 +164,15 @@ useEffect(() => {
             return;
         }
 
+        const conversationId = selectedConversation._id;
+
         setSending(true);
         setError("");
 
         socketRef.current.emit(
             "sendMessage",
             {
-                conversationId: selectedConversation._id,
+                conversationId,
                 text,
             },
             (response) => {
@@ -188,15 +185,20 @@ useEffect(() => {
 
                 const sentMessage = response.data;
 
-                setMessages((prev) =>
-                    prev.some((item) => item._id === sentMessage._id)
-                        ? prev
-                        : [...prev, sentMessage]
-                );
+                // Update only the conversation where the message was sent
+                if (selectedConversationIdRef.current === conversationId) {
+                    setMessages((prev) =>
+                        prev.some((item) => item._id === sentMessage._id)
+                            ? prev
+                            : [...prev, sentMessage]
+                    );
+
+                    setNewMessage("");
+                }
 
                 setConversations((prev) =>
                     prev.map((conversation) =>
-                        conversation._id === selectedConversation._id
+                        conversation._id === conversationId
                             ? {
                                 ...conversation,
                                 lastMessage: sentMessage,
@@ -204,8 +206,6 @@ useEffect(() => {
                             : conversation
                     )
                 );
-
-                setNewMessage("");
             }
         );
     };
@@ -248,8 +248,7 @@ useEffect(() => {
                         ) : (
                             <div>
                                 {conversations.map((conversation) => {
-                                    const otherUser =
-                                        getOtherUser(conversation);
+                                    const otherUser = getOtherUser(conversation);
 
                                     if (!otherUser) return null;
 
@@ -261,9 +260,9 @@ useEffect(() => {
                                                 setSelectedConversation(conversation);
                                             }}
                                             className={`w-full flex items-center gap-3 p-4 text-left hover:bg-base-200 transition ${
-                                            selectedConversation?._id === conversation._id
-                                             ? "bg-base-200"
-                                             : ""
+                                                selectedConversation?._id === conversation._id
+                                                    ? "bg-base-200"
+                                                    : ""
                                             }`}
                                         >
                                             <div className="avatar">
@@ -302,9 +301,11 @@ useEffect(() => {
                         {!selectedConversation ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-base-content/50">
                                 <div className="text-5xl mb-4">💬</div>
+
                                 <h2 className="text-xl font-semibold">
                                     Your Messages
                                 </h2>
+
                                 <p className="mt-2">
                                     Select a conversation to start chatting.
                                 </p>
@@ -312,8 +313,7 @@ useEffect(() => {
                         ) : (
                             <>
                                 {(() => {
-                                    const otherUser =
-                                        getOtherUser(selectedConversation);
+                                    const otherUser = getOtherUser(selectedConversation);
 
                                     return (
                                         <div className="p-4 border-b border-base-300 flex items-center gap-3">
@@ -334,6 +334,7 @@ useEffect(() => {
                                                     {otherUser?.firstName}{" "}
                                                     {otherUser?.lastName}
                                                 </h2>
+
                                                 <p className="text-xs text-success">
                                                     Conversation
                                                 </p>

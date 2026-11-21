@@ -60,8 +60,8 @@ function Home() {
       setMessageType("error");
       setMessage(
         err.response?.data?.message ||
-        err.response?.data ||
-        "Something went wrong."
+          err.response?.data ||
+          "Something went wrong."
       );
     } finally {
       actionLock.current = false;
@@ -69,66 +69,55 @@ function Home() {
     }
   };
 
- 
-const handleSendMessage = async () => {
-  const targetUser = users[currentIndex];
+  const handleSendMessage = async () => {
+    const targetUser = users[currentIndex];
 
-  if (!targetUser || !introMessage.trim()) {
-    setMessage("Please enter a message.");
-    setMessageType("error");
-    return;
-  }
-
-  // Verify the exact recipient before sending
-  console.log("Message recipient:", {
-    name: `${targetUser.firstName} ${targetUser.lastName}`,
-    email: targetUser.emailId,
-    id: targetUser._id
-  });
-
-  if (!targetUser._id) {
-    setMessage("Unable to identify the recipient.");
-    setMessageType("error");
-    return;
-  }
-
-  setActionLoading(true);
-  setMessage("");
-
-  try {
-    const res = await axios.post(
-      `http://localhost:3000/message/request/${targetUser._id}`,
-      { message: introMessage.trim() },
-      { withCredentials: true }
-    );
-
-    console.log("Message request response:", res.data);
-
-    setShowMessageModal(false);
-    setIntroMessage("");
-
-    if (res.data.conversation) {
-      navigate("/chat");
+    if (!targetUser || !introMessage.trim()) {
+      setMessage("Please enter a message.");
+      setMessageType("error");
       return;
     }
 
-    setMessageType("success");
-    setMessage(
-      res.data.message || "Message request sent successfully!"
-    );
-  } catch (err) {
-    console.error("Message request failed:", err);
+    if (!targetUser._id) {
+      setMessage("Unable to identify the recipient.");
+      setMessageType("error");
+      return;
+    }
 
-    setMessageType("error");
-    setMessage(
-      err.response?.data?.message ||
-      "Could not send message request."
-    );
-  } finally {
-    setActionLoading(false);
-  }
-};
+    setActionLoading(true);
+    setMessage("");
 
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/message/request/${targetUser._id}`,
+        { message: introMessage.trim() },
+        { withCredentials: true }
+      );
+
+      setShowMessageModal(false);
+      setIntroMessage("");
+
+      if (res.data.conversation) {
+        navigate("/chat");
+        return;
+      }
+
+      setMessageType("success");
+      setMessage(
+        res.data.message || "Message request sent successfully!"
+      );
+    } catch (err) {
+      console.error("Message request failed:", err);
+
+      setMessageType("error");
+      setMessage(
+        err.response?.data?.message ||
+          "Could not send message request."
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (

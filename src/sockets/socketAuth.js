@@ -1,4 +1,3 @@
-
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const cookieParser = require("cookie-parser");
@@ -21,10 +20,10 @@ const socketAuth = async (socket, next) => {
           return next(new Error("Authentication required"));
         }
 
-        // Verify JWT
+        // Verify JWT using environment variable
         const decodedData = jwt.verify(
           token,
-          "DevNexus@NewSecret2026#Secure"
+          process.env.JWT_SECRET
         );
 
         const { _id } = decodedData;

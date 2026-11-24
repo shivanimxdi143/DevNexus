@@ -1,39 +1,71 @@
 const express = require("express");
 const authRouter = express.Router();
 
-const  { validateSignUpData } = require("../utils/validation");
+const { validateSignUpData } = require("../utils/validation");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-authRouter.post("/signup" , async (req,res) => {
-     
+// Environment-aware cookie options for cross-origin HTTPS & local development
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    path: "/",
+};
+
+// SIGNUP
+authRouter.post("/signup", async (req, res) => {
     try {
-     validateSignUpData(req);
+        validateSignUpData(req);
 
-     const { firstName, lastName, emailId, password } = req.body;
+        const {
+            firstName,
+            lastName,
+            emailId,
+            password,
+            age,
+            gender
+        } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
+        const normalizedEmail = emailId.trim().toLowerCase();
 
-     const user = new User({
-       firstName, lastName, emailId, password: passwordHash,
-     });
+        const existingUser = await User.findOne({
+            emailId: normalizedEmail
+        });
 
-     await user.save();
-     res.send("User added successfully");
+        if (existingUser) {
+            return res.status(400).send("Email already registered!");
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const user = new User({
+            firstName,
+            lastName,
+            emailId: normalizedEmail,
+            password: passwordHash,
+            age,
+            gender
+        });
+
+        await user.save();
+
+        res.status(201).send("User added successfully");
     }
     catch (err) {
-      console.log(err);
-      res.status(400).send("Error saving the user:" + err.message);
+        res.status(400).send("Error saving the user: " + err.message);
     }
-})
+});
 
+// LOGIN
 authRouter.post("/login", async (req, res) => {
     try {
         const { emailId, password } = req.body;
 
-        const user = await User.findOne({ emailId: emailId });
+        const user = await User.findOne({ emailId });
 
         if (!user) {
             throw new Error("invalid credentials");
@@ -45,21 +77,16 @@ authRouter.post("/login", async (req, res) => {
         );
 
         if (isPasswordValid) {
-            // CREATE A JWT TOKEN
+            const token = jwt.sign(
+                { _id: user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: "7d" }
+            );
 
-           const token = jwt.sign(
-  { _id: user._id },
-  "DevNexus@NewSecret2026#Secure",
-  { expiresIn: "7d" }
-);
-          
-           
-           res.cookie("token", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    expires: new Date(Date.now() + 8 * 3600000),
-});
+            res.cookie("token", token, {
+                ...cookieOptions,
+                expires: new Date(Date.now() + 8 * 3600000),
+            });
 
             res.send("Login Successful!");
         } else {
@@ -71,19 +98,10 @@ authRouter.post("/login", async (req, res) => {
     }
 });
 
-
+// LOGOUT
 authRouter.post("/logout", (req, res) => {
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-    });
-
+    res.clearCookie("token", cookieOptions);
     res.send("Logout successful!");
 });
-
-
-
 
 module.exports = authRouter;

@@ -1,3 +1,148 @@
 @import "tailwindcss";
-@import "tailwindcss";
 @plugin "daisyui";
+
+@layer base {
+  :root {
+    --color-bg-base: #151923;
+    --color-bg-secondary: #1B2130;
+    --color-surface: #222A3B;
+    --color-surface-elevated: #2B3449;
+    --color-surface-border: rgba(139, 131, 247, 0.14);
+    --color-accent-violet: #8B83F7;
+    --color-accent-blue: #55B8E8;
+    --color-accent-coral: #E69AB5;
+    --color-accent-gold: #D9B875;
+    --color-text-primary: #F1F2F8;
+    --color-text-secondary: #A5AEC0;
+    --color-text-muted: #737D92;
+  }
+
+  body {
+    background-color: #151923;
+    color: #F1F2F8;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbar - Midnight Aurora */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #151923;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2B3449;
+  border-radius: 9999px;
+  border: 1px solid rgba(139, 131, 247, 0.12);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B4663;
+}
+
+/* Glassmorphism & Surface Utilities - Midnight Aurora */
+.glass-panel {
+  background: rgba(27, 33, 48, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(139, 131, 247, 0.12);
+}
+
+.glass-card {
+  background: rgba(34, 42, 59, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(139, 131, 247, 0.14);
+  box-shadow: 0 12px 36px 0 rgba(10, 13, 20, 0.55);
+}
+
+.glass-nav {
+  background: rgba(21, 25, 35, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(139, 131, 247, 0.12);
+}
+
+/* Luminous Glows */
+.glow-violet {
+  box-shadow: 0 0 25px -4px rgba(139, 131, 247, 0.35);
+}
+
+.glow-blue {
+  box-shadow: 0 0 25px -4px rgba(85, 184, 232, 0.32);
+}
+
+.glow-coral {
+  box-shadow: 0 0 25px -4px rgba(230, 154, 181, 0.32);
+}
+
+.glow-gold {
+  box-shadow: 0 0 25px -4px rgba(217, 184, 117, 0.35);
+}
+
+/* Midnight Aurora Gradients */
+.gradient-text {
+  background: linear-gradient(135deg, #F1F2F8 0%, #8B83F7 50%, #55B8E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-aurora-text {
+  background: linear-gradient(135deg, #8B83F7 0%, #55B8E8 50%, #E69AB5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-gold-text {
+  background: linear-gradient(135deg, #FFF8E7 0%, #D9B875 55%, #B89345 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Primary Button / Highlight Gradient */
+.gradient-primary {
+  background: linear-gradient(135deg, #8B83F7 0%, #6E67E8 50%, #55B8E8 100%);
+  color: #FFFFFF;
+}
+
+.gradient-primary:hover {
+  background: linear-gradient(135deg, #7C73EB 0%, #6057DE 50%, #47A9D8 100%);
+}
+
+.gradient-aurora {
+  background: linear-gradient(135deg, #8B83F7 0%, #55B8E8 50%, #E69AB5 100%);
+  color: #151923;
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #A8863E 0%, #D9B875 50%, #F3D99E 100%);
+  color: #151923;
+}
+
+/* Smooth Card Transitions */
+.card-transition {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-transition:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 131, 247, 0.32);
+  box-shadow: 0 16px 36px -8px rgba(10, 13, 20, 0.65), 0 0 20px -6px rgba(139, 131, 247, 0.22);
+}
+
+/* Stories / Avatar Ring Gradient */
+.story-ring-aurora {
+  background: linear-gradient(135deg, #8B83F7 0%, #55B8E8 50%, #E69AB5 100%);
+  padding: 2.5px;
+}
+
+.story-ring-gold {
+  background: linear-gradient(135deg, #FFF8E7 0%, #D9B875 55%, #B89345 100%);
+  padding: 2.5px;
+}

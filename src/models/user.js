@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -18,7 +19,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         validate(value) {
-            if(!validator.isEmail(value)) {
+            if (!validator.isEmail(value)) {
                 throw new Error("Invalid email");
             }
         }
@@ -27,7 +28,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         validate(value) {
-            if(!validator.isStrongPassword(value)) {
+            if (!validator.isStrongPassword(value)) {
                 throw new Error("Enter Strong password");
             }
         }
@@ -48,22 +49,38 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "This is a default about of a user",
     },
+    photoUrl: {
+        type: String,
+        default: "",
+    },
     skills: {
         type: [String],
     },
-},
-{
-  timestamps: true,
-}
-);
 
-
+    // Premium membership details
+    premium: {
+        isActive: {
+            type: Boolean,
+            default: false,
+        },
+        plan: {
+            type: String,
+            enum: ["monthly", "yearly", null],
+            default: null,
+        },
+        startDate: {
+            type: Date,
+            default: null,
+        },
+        expiryDate: {
+            type: Date,
+            default: null,
+        },
+    },
+}, {
+    timestamps: true,
+});
 
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
-
-
-
-
-

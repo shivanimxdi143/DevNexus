@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Body from "./components/Body";
@@ -23,7 +22,7 @@ const appRouter = createBrowserRouter([
     path: "/",
     element: (
       <CheckAuth>
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-[#151923] text-[#F1F2F8]">
           <Navbar />
           <main className="flex-1 w-full min-w-0 flex flex-col">
             <Body />
@@ -85,29 +84,29 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-  path: "/premium",
-  element: (
-    <ProtectedRoute>
-      <Premium />
-    </ProtectedRoute>
-  ),
-},
-{
-  path: "/chat",
-  element: (
-    <ProtectedRoute>
-      <Chat />
-    </ProtectedRoute>
-  ),
-},
-{
-    path: "/message-requests",
-    element: (
-        <ProtectedRoute>
+        path: "/premium",
+        element: (
+          <ProtectedRoute>
+            <Premium />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/chat",
+        element: (
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/message-requests",
+        element: (
+          <ProtectedRoute>
             <MessageRequests />
-        </ProtectedRoute>
-    ),
-},
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 ]);

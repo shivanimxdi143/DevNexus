@@ -3,10 +3,11 @@ import Footer from "./Footer";
 
 function Body() {
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex-1">
+    <div className="flex flex-col flex-1 min-h-0">
+      <main className="flex-1 pb-16 lg:pb-0">
         <Outlet />
-      </div>
+      </main>
+
       <Footer />
     </div>
   );

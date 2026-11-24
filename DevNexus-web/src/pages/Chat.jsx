@@ -209,10 +209,28 @@ const Chat = () => {
     );
   };
 
-  const filteredConversations = conversations.filter((conv) => {
+  // Remove duplicate conversations with the same developer
+  const uniqueConversations = [
+    ...new Map(
+      [...conversations]
+        .sort(
+          (a, b) =>
+            new Date(b.updatedAt || b.createdAt || 0) -
+            new Date(a.updatedAt || a.createdAt || 0)
+        )
+        .map((conv) => {
+          const other = getOtherUser(conv);
+          const otherId = other?._id || other?.id;
+          return [otherId?.toString(), conv];
+        })
+        .filter(([id]) => id)
+    ).values(),
+  ];
+
+  const filteredConversations = uniqueConversations.filter((conv) => {
     const other = getOtherUser(conv);
-    if (!other) return false;
-    const name = `${other.firstName || ""} ${other.lastName || ""}`.toLowerCase();
+    const name = `${other?.firstName || ""} ${other?.lastName || ""}`.toLowerCase();
+
     return name.includes(searchFilter.toLowerCase());
   });
 
@@ -232,7 +250,7 @@ const Chat = () => {
   return (
     <div className="h-[calc(100vh-4.25rem)] bg-[#151923] text-[#F1F2F8] flex flex-col p-2 sm:p-4 md:p-6 overflow-hidden">
       <div className="max-w-7xl w-full mx-auto flex-1 flex flex-col rounded-3xl glass-card border border-[#2B3449] shadow-2xl overflow-hidden">
-        
+
         {/* Error notification */}
         {error && (
           <div className="px-4 py-2.5 bg-rose-950/80 border-b border-rose-500/30 text-rose-200 text-xs flex items-center justify-between">
@@ -242,21 +260,20 @@ const Chat = () => {
         )}
 
         <div className="flex-1 flex overflow-hidden">
-          
+
           {/* Left Column: Conversations List */}
           <div
-            className={`w-full md:w-80 lg:w-96 border-r border-[#2B3449] flex flex-col bg-[#1B2130] ${
-              selectedConversation ? "hidden md:flex" : "flex"
-            }`}
+            className={`w-full md:w-80 lg:w-96 border-r border-[#2B3449] flex flex-col bg-[#1B2130] ${selectedConversation ? "hidden md:flex" : "flex"
+              }`}
           >
             {/* Conversations Header & Search */}
             <div className="p-4 border-b border-[#2B3449] space-y-3">
               <div className="flex items-center justify-between">
                 <h1 className="text-lg font-bold text-[#F1F2F8] tracking-tight flex items-center gap-2">
                   <span>Messages</span>
-                  {conversations.length > 0 && (
+                  {uniqueConversations.length > 0 && (
                     <span className="text-xs px-2 py-0.5 rounded-full bg-[#8B83F7]/15 text-[#8B83F7] font-semibold">
-                      {conversations.length}
+                      {uniqueConversations.length}
                     </span>
                   )}
                 </h1>
@@ -304,11 +321,10 @@ const Chat = () => {
                         setError("");
                         setSelectedConversation(conv);
                       }}
-                      className={`w-full flex items-center gap-3.5 p-4 text-left transition-all ${
-                        isSelected
+                      className={`w-full flex items-center gap-3.5 p-4 text-left transition-all ${isSelected
                           ? "bg-[#222A3B] border-l-4 border-[#8B83F7]"
                           : "hover:bg-[#222A3B]/40"
-                      }`}
+                        }`}
                     >
                       <div className="relative shrink-0">
                         <div className="w-12 h-12 rounded-2xl overflow-hidden ring-1 ring-[#2B3449] bg-[#151923]">
@@ -348,9 +364,8 @@ const Chat = () => {
 
           {/* Right Column: Active Chat Stream */}
           <div
-            className={`flex-1 flex flex-col bg-[#151923] min-w-0 ${
-              !selectedConversation ? "hidden md:flex" : "flex"
-            }`}
+            className={`flex-1 flex flex-col bg-[#151923] min-w-0 ${!selectedConversation ? "hidden md:flex" : "flex"
+              }`}
           >
             {!selectedConversation ? (
               <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -427,16 +442,14 @@ const Chat = () => {
                       return (
                         <div
                           key={msg._id}
-                          className={`flex items-end gap-2 ${
-                            isMine ? "justify-end" : "justify-start"
-                          }`}
+                          className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"
+                            }`}
                         >
                           <div
-                            className={`max-w-[78%] sm:max-w-md px-4 py-2.5 text-sm leading-relaxed shadow-md ${
-                              isMine
+                            className={`max-w-[78%] sm:max-w-md px-4 py-2.5 text-sm leading-relaxed shadow-md ${isMine
                                 ? "gradient-primary text-white rounded-2xl rounded-br-xs shadow-[#8B83F7]/25"
                                 : "bg-[#222A3B] text-[#F1F2F8] border border-[#2B3449] rounded-2xl rounded-bl-xs"
-                            }`}
+                              }`}
                           >
                             <p className="whitespace-pre-wrap break-words">{msg.text}</p>
                           </div>
